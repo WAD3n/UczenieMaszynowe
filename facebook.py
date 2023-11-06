@@ -185,20 +185,21 @@ print(A)
 print(Sa)
 
 
-def badanie_istotnosci(A, Sa):
-    for n, a in enumerate(A):
-        I = a / Sa[n][n]
-        print(I)
+#def badanie_istotnosci(A, Sa):
+#    for n, a in enumerate(A):
+##        I = a / Sa[n][n]
+ #       print(I)
 
 
-badanie_istotnosci(wspolczynniki, Sa)
+#badanie_istotnosci(wspolczynniki, Sa)
 
 ax[1, 0].set_title('rok - przychod')
-funkcja_przychod, wspolczynniki_przychod = wyznacz_funkcje_wielomianowa(rok, przychod, stopien)
-for i, (x, y) in enumerate(zip(rok, przychod)):
+funkcja_przychod, wspolczynniki_przychod = wyznacz_funkcje_wielomianowa(new_rok, przychod, stopien)
+funkcja_wykladnicza_przychod, a, b = wyznacz_funkcje_wykladnicza(new_rok, przychod)
+for i, (x, y) in enumerate(zip(new_rok, przychod)):
     ax[1, 0].text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
 ax[1, 0].scatter(rok, przychod)
-x_przychod = np.linspace(2007, 2017, 1000)
+x_przychod = np.linspace(0, len(new_rok), 1000)
 ax[1, 0].set_xlabel('rok')
 ax[1, 0].set_ylabel('przychod')
 ax[1, 0].plot(x_przychod, funkcja_przychod(x_przychod))

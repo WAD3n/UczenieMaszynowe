@@ -22,7 +22,7 @@ for element in lista:
     zysk.append(int(element[2]))
     pracownicy.append(int(element[3]))
 
-stopien = 6
+stopien = 4
 
 new_rok = []
 for _ in range(len(rok)):
@@ -43,7 +43,7 @@ def wyznacz_funkcje_wielomianowa(x, y, stopien):
 def wyznacz_funkcje_wykladnicza(x, y):
     if len(x) != len(y):
         raise ValueError("Liczba punktów musi być taka sama.")
-    ln_y = np.log(y)
+    ln_y = np.log(np.abs(y))
     # Stwórz macierz A i wektor b
     A = np.vstack([np.ones(len(x)), x]).T
     b = ln_y
@@ -73,14 +73,16 @@ plt.savefig('rok-pracownicy.png')
 plt.close()
 
 plt.title('rok - przychod')
-funkcja_przychod, wspolczynniki_przychod = wyznacz_funkcje_wielomianowa(rok, przychod, stopien)
-for i, (x, y) in enumerate(zip(rok, przychod)):
+funkcja_przychod, wspolczynniki_przychod = wyznacz_funkcje_wielomianowa(new_rok, przychod, stopien)
+funkcja_wykladnicza_przychod , c, d = wyznacz_funkcje_wykladnicza(new_rok, przychod)
+for i, (x, y) in enumerate(zip(new_rok, przychod)):
     plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
-plt.scatter(rok, przychod)
-x_przychod = np.linspace(2007,2017, 1000)
+plt.scatter(new_rok, przychod)
+x_przychod = np.linspace(0, len(new_rok), 1000)
 plt.xlabel('rok')
 plt.ylabel('przychod')
 plt.plot(x_przychod, funkcja_przychod(x_przychod))
+plt.plot(x_przychod, funkcja_wykladnicza_przychod(x_przychod),color='red')
 plt.savefig('rok-przychod.png')
 plt.close()
 
@@ -91,14 +93,16 @@ sorted_zysk = [zysk[i] for i in sorted_indices]
 
 # Utworzenie wykresu
 plt.title('rok - zysk')
-funkcja_zysk, wspolczynniki_zysk = wyznacz_funkcje_wielomianowa(rok, zysk, stopien)
-for i, (x, y) in enumerate(zip(sorted_rok, sorted_zysk)):
+funkcja_zysk, wspolczynniki_zysk = wyznacz_funkcje_wielomianowa(new_rok, zysk, stopien)
+funkcja_wykladnicza_zysk , k, l = wyznacz_funkcje_wykladnicza(new_rok, zysk)
+for i, (x, y) in enumerate(zip(new_rok, sorted_zysk)):
     plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
-plt.scatter(sorted_rok, sorted_zysk)
+plt.scatter(new_rok, sorted_zysk)
 plt.xlabel('rok')
 plt.ylabel('zysk')
-x_zysk = np.linspace(2007,2017, 1000)
-plt.plot(x_zysk,funkcja_zysk(x_zysk))
+x_zysk = np.linspace(0,len(new_rok), 1000)
+plt.plot(x_zysk, funkcja_przychod(x_zysk))
+plt.plot(x_zysk, funkcja_wykladnicza_zysk(x_zysk),color='red')
 plt.savefig('rok-zysk.png')
 plt.close()
 
