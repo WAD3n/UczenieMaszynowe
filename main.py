@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 import matplotlib.pyplot as plt
 # Utworzenie zmiennej csvreader która zawiera kontekst pliku csv a nastepnie
 # utworzenie zmiennej list ktora jest lista wierszy wczesniej otworzonego pliku
@@ -21,22 +22,65 @@ for element in lista:
     zysk.append(int(element[2]))
     pracownicy.append(int(element[3]))
 
+stopien = 6
+
+new_rok = []
+for _ in range(len(rok)):
+    new_rok.append(_)
+
+def wyznacz_funkcje_wielomianowa(x, y, stopien):
+    if len(x) != len(y):
+        raise ValueError("Liczba punktów musi być taka sama.")
+    A = np.vander(x, N=stopien + 1, increasing=True)
+    b = y
+    wspolczynniki = np.linalg.lstsq(A, b, rcond=None)[0]
+    def funkcja_wielomianowa(x):
+        return sum(wspolczynniki[i] * x ** i for i in range(stopien + 1))
+
+    return funkcja_wielomianowa, wspolczynniki
+
+
+def wyznacz_funkcje_wykladnicza(x, y):
+    if len(x) != len(y):
+        raise ValueError("Liczba punktów musi być taka sama.")
+    ln_y = np.log(y)
+    # Stwórz macierz A i wektor b
+    A = np.vstack([np.ones(len(x)), x]).T
+    b = ln_y
+    # Rozwiąż układ równań liniowych A * x = b
+    ln_a, b_value = np.linalg.lstsq(A, b, rcond=None)[0]
+    a = np.exp(ln_a)
+    b = b_value
+    def funkcja_wykladnicza(x):
+        return a * np.exp(b * x)
+
+    return funkcja_wykladnicza, a, b
+
 # Utworzenie wykresow
+funkcja, wspolczynniki = wyznacz_funkcje_wielomianowa(new_rok, pracownicy, stopien)
+funkcja_wykladnicza,a,b = wyznacz_funkcje_wykladnicza(new_rok,pracownicy)
 plt.title('rok - pracownicy')
-for i, (x, y) in enumerate(zip(rok, pracownicy)):
+for i, (x, y) in enumerate(zip(new_rok, pracownicy)):
     plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
-plt.scatter(rok, pracownicy)
+plt.scatter(new_rok, pracownicy)
 plt.xlabel('rok')
 plt.ylabel('pracownicy')
+x = np.linspace(0,len(rok), 1000)
+y = funkcja(x)
+plt.plot(x, y)
+plt.plot(x,funkcja_wykladnicza(x),color='red')
 plt.savefig('rok-pracownicy.png')
 plt.close()
 
 plt.title('rok - przychod')
+funkcja_przychod, wspolczynniki_przychod = wyznacz_funkcje_wielomianowa(rok, przychod, stopien)
 for i, (x, y) in enumerate(zip(rok, przychod)):
     plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
 plt.scatter(rok, przychod)
+x_przychod = np.linspace(2007,2017, 1000)
 plt.xlabel('rok')
 plt.ylabel('przychod')
+plt.plot(x_przychod, funkcja_przychod(x_przychod))
 plt.savefig('rok-przychod.png')
 plt.close()
 
@@ -47,38 +91,14 @@ sorted_zysk = [zysk[i] for i in sorted_indices]
 
 # Utworzenie wykresu
 plt.title('rok - zysk')
+funkcja_zysk, wspolczynniki_zysk = wyznacz_funkcje_wielomianowa(rok, zysk, stopien)
 for i, (x, y) in enumerate(zip(sorted_rok, sorted_zysk)):
     plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
 plt.scatter(sorted_rok, sorted_zysk)
 plt.xlabel('rok')
 plt.ylabel('zysk')
+x_zysk = np.linspace(2007,2017, 1000)
+plt.plot(x_zysk,funkcja_zysk(x_zysk))
 plt.savefig('rok-zysk.png')
 plt.close()
-
-
-def function(lista1, lista2):
-    tmp = []
-    for _ in lista1:
-        tmp.append(pow(_, 2))
-    macierz1 = []
-    macierz2 = []
-    macierz_niewaiadomych = []
-    macierz1.append([sum(tmp), sum(lista1)])
-    macierz1.append([sum(lista1), len(lista1)])
-    print(macierz1)
-
-    for _ in range(len(lista1)):
-        tmp[_] = lista1[_]*lista2[_]
-    macierz2.append(sum(tmp))
-    macierz2.append(sum(lista2))
-    print("\n", macierz2)
-
-    macierz_niewaiadomych.append(
-        macierz1[0][0]*macierz2[0]+macierz1[0][0]*macierz2[1]+macierz1[0][1]*macierz2[0]+macierz1[0][1]*macierz2[1])
-    macierz_niewaiadomych.append(
-        macierz1[1][0] * macierz2[0] + macierz1[1][0] * macierz2[1] + macierz1[1][1] * macierz2[0] + macierz1[1][1] *
-        macierz2[1])
-    print("\n",macierz_niewaiadomych)
-
-
-function(rok, pracownicy)
+#koniec
