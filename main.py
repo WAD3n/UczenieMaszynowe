@@ -101,4 +101,4 @@ x_zysk = np.linspace(2007,2017, 1000)
 plt.plot(x_zysk,funkcja_zysk(x_zysk))
 plt.savefig('rok-zysk.png')
 plt.close()
-#koniec
+
