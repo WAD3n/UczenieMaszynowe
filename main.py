@@ -1,6 +1,9 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+import draw_graph
+
+
 # Utworzenie zmiennej csvreader która zawiera kontekst pliku csv a nastepnie
 # utworzenie zmiennej list ktora jest lista wierszy wczesniej otworzonego pliku
 file = open('zarobki.csv')
@@ -59,18 +62,19 @@ def wyznacz_funkcje_wykladnicza(x, y):
 # Utworzenie wykresow
 funkcja, wspolczynniki = wyznacz_funkcje_wielomianowa(new_rok, pracownicy, stopien)
 funkcja_wykladnicza,a,b = wyznacz_funkcje_wykladnicza(new_rok,pracownicy)
-plt.title('rok - pracownicy')
-for i, (x, y) in enumerate(zip(new_rok, pracownicy)):
-    plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
-plt.scatter(new_rok, pracownicy)
-plt.xlabel('rok')
-plt.ylabel('pracownicy')
-x = np.linspace(0,len(rok), 1000)
-y = funkcja(x)
-plt.plot(x, y)
-plt.plot(x,funkcja_wykladnicza(x),color='red')
-plt.savefig('rok-pracownicy.png')
-plt.close()
+# plt.title('rok - pracownicy')
+# for i, (x, y) in enumerate(zip(new_rok, pracownicy)):
+#     plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
+# plt.scatter(new_rok, pracownicy)
+# plt.xlabel('rok')
+# plt.ylabel('pracownicy')
+# x = np.linspace(0,len(rok), 1000)
+# y = funkcja(x)
+# plt.plot(x, y)
+# plt.plot(x,funkcja_wykladnicza(x),color='red')
+# plt.savefig('rok-pracownicy.png')
+# plt.close()
+draw_graph.draw_graph(new_rok,pracownicy,'rok','pracownicy','pracownicy',funkcja,funkcja_wykladnicza)
 
 plt.title('rok - przychod')
 funkcja_przychod, wspolczynniki_przychod = wyznacz_funkcje_wielomianowa(new_rok, przychod, stopien)
