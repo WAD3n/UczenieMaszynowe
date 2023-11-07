@@ -12,8 +12,8 @@ def draw_graph(array1,array2,axisx_name,axisy_name,graph_name,funtion1 = None,fu
     plt.xlabel(axisx_name)
     plt.ylabel(axisy_name)
     # dodanie wartosci nad punktami
-    #for i, (x, y) in enumerate(zip(array1, array2)):
-    #    plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
+    for i, (x, y) in enumerate(zip(array1, array2)):
+        plt.text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
     # naniesienie puntkow na wykres
     plt.scatter(array1, array2)
     # utworzenie przestrzeni liniowej dla podstawienia do funkcji
