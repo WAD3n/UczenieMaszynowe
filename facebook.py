@@ -5,7 +5,7 @@ from pandas import read_excel
 import modele_funkcji as mf
 import draw_graph as draw
 
-fig, ax = plt.subplots(2, 2, figsize=(30, 16))
+fig, ax = plt.subplots(1, 1, figsize=(30, 16))
 
 
 def load_data():
@@ -25,12 +25,12 @@ def load_data():
     return quarter_index, users
 
 
-def make_plot(plot_index1, plot_index2, x, y, title, xlabel, ylabel, model):
-    ax[plot_index1, plot_index2].scatter(x, y)
-    ax[plot_index1, plot_index2].set_title(title)
-    ax[plot_index1, plot_index2].set_xlabel(xlabel)
-    ax[plot_index1, plot_index2].set_ylabel(ylabel)
-    ax[plot_index1, plot_index2].plot(x, model, 'g-', linewidth=2.0)
+def make_plot(x, y, title, xlabel, ylabel, model):
+    ax.scatter(x, y)
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.plot(x, model, 'g-', linewidth=2.0)
 
 
 def build_matrices(x, y):
@@ -120,7 +120,7 @@ cov_matrix(Se2, X, X_t)
 rates(e, Y, quarter_index, users)
 prediction(1, 2018, X_t, X, Se)
 prediction(4, 2018, X_t, X, Se)
-make_plot(0, 0, quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
+make_plot(quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
           y_model(quarter_index))
 plt.savefig('uzytkownicy.jpg')
 plt.close()
