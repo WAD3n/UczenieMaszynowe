@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import read_excel
+# dodanie modulow czastkowych
+import modele_funkcji as mf
+import draw_graph as draw
 
 fig, ax = plt.subplots(2, 2, figsize=(30, 16))
 
@@ -119,8 +122,8 @@ prediction(1, 2018, X_t, X, Se)
 prediction(4, 2018, X_t, X, Se)
 make_plot(0, 0, quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
           y_model(quarter_index))
-
-
+plt.savefig('uzytkownicy.jpg')
+plt.close()
 ########################################### Nieliniowe #################
 def load_data2():
     dane = read_excel(r"dane2.xlsx")
@@ -128,54 +131,9 @@ def load_data2():
         'Zatrudnienie'].tolist()
 
 
-def wyznacz_funkcje_wielomianowa(x, y, stopien):
-    if len(x) != len(y):
-        raise ValueError("Liczba punktów musi być taka sama.")
-    A = np.vander(x, N=stopien + 1, increasing=True)
-    b = y
-    wspolczynniki = np.linalg.lstsq(A, b, rcond=None)[0]
-
-    def funkcja_wielomianowa(x):
-        return sum(wspolczynniki[i] * x ** i for i in range(stopien + 1))
-
-    return funkcja_wielomianowa, wspolczynniki
-
-
-def wyznacz_funkcje_wykladnicza(x, y):
-    if len(x) != len(y):
-        raise ValueError("Liczba punktów musi być taka sama.")
-    ln_y = np.log(y)
-    # Stwórz macierz A i wektor b
-    A = np.vstack([np.ones(len(x)), x]).T
-    b = ln_y
-    # Rozwiąż układ równań liniowych A * x = b
-    ln_a, b_value = np.linalg.lstsq(A, b, rcond=None)[0]
-    a = np.exp(ln_a)
-    b = b_value
-
-    def funkcja_wykladnicza(x):
-        return a * np.exp(b * x)
-
-    return funkcja_wykladnicza, a, b
-
-
-stopien = 6
 rok, przychod, zysk, pracownicy = load_data2()
 new_rok = [n - 2006 for n in rok]
 
-# Utworzenie wykresow
-funkcja, wspolczynniki = wyznacz_funkcje_wielomianowa(new_rok, pracownicy, stopien)
-funkcja_wykladnicza, a, b = wyznacz_funkcje_wykladnicza(new_rok, pracownicy)
-ax[0, 1].set_title('rok - pracownicy')
-for i, (x, y) in enumerate(zip(new_rok, pracownicy)):
-    ax[0, 1].text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
-ax[0, 1].scatter(new_rok, pracownicy)
-ax[0, 1].set_xlabel('rok')
-ax[0, 1].set_ylabel('pracownicy')
-x = np.linspace(0, len(rok), 1000)
-y = funkcja(x)
-ax[0, 1].plot(x, y)
-ax[0, 1].plot(x, funkcja_wykladnicza(x), color='red')
 
 X, X_t, Y, A = build_matrices(new_rok, pracownicy)
 e, Se, Se2 = standard_deviation(X, A, new_rok)
@@ -193,37 +151,9 @@ print(Sa)
 
 #badanie_istotnosci(wspolczynniki, Sa)
 
-ax[1, 0].set_title('rok - przychod')
-funkcja_przychod, wspolczynniki_przychod = wyznacz_funkcje_wielomianowa(new_rok, przychod, stopien)
-funkcja_wykladnicza_przychod, a, b = wyznacz_funkcje_wykladnicza(new_rok, przychod)
-for i, (x, y) in enumerate(zip(new_rok, przychod)):
-    ax[1, 0].text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
-ax[1, 0].scatter(rok, przychod)
-x_przychod = np.linspace(0, len(new_rok), 1000)
-ax[1, 0].set_xlabel('rok')
-ax[1, 0].set_ylabel('przychod')
-ax[1, 0].plot(x_przychod, funkcja_przychod(x_przychod))
-
-# Posortowanie danych według wartości zysku rosnąco
-sorted_indices = sorted(range(len(zysk)), key=lambda _: zysk[_])
-sorted_rok = [rok[i] for i in sorted_indices]
-sorted_zysk = [zysk[i] for i in sorted_indices]
-
-# Utworzenie wykresu
-ax[1, 1].set_title('rok - zysk')
-funkcja_zysk, wspolczynniki_zysk = wyznacz_funkcje_wielomianowa(rok, zysk, stopien)
-for i, (x, y) in enumerate(zip(sorted_rok, sorted_zysk)):
-    ax[1, 1].text(x, y, f'{y}', fontsize=8, ha='center', va='bottom', color='black')
-ax[1, 1].scatter(sorted_rok, sorted_zysk)
-ax[1, 1].set_xlabel('rok')
-ax[1, 1].set_ylabel('zysk')
-x_zysk = np.linspace(2007, 2017, 1000)
-ax[1, 1].plot(x_zysk, funkcja_zysk(x_zysk))
-
-# model y = b*a^x
-# linearyzacja  log_y = log_b + x * log_A
-# zał.: przychod_l = log_y , a_0 = log_b , a_1 = log_A
-# zatem: przychod_l = x * a_1 + a_0
+draw.draw_graph(new_rok, pracownicy, 'rok', 'liczba pracownikow', 'pracownicy', mf.wyznacz_funkcje_wielomianowa(new_rok, pracownicy, 3), mf.wyznacz_funkcje_wykladnicza(new_rok, pracownicy))
+draw.draw_graph(new_rok, przychod, 'rok', 'przychod', 'przychod', mf.wyznacz_funkcje_wielomianowa(new_rok, przychod, 3), mf.wyznacz_funkcje_wykladnicza(new_rok, przychod))
+draw.draw_graph(new_rok, zysk, 'rok', 'zysk', 'zysk', mf.wyznacz_funkcje_wielomianowa(new_rok, zysk, 3), mf.wyznacz_funkcje_wykladnicza(new_rok, zysk))
 
 # przychod_l = [np.log(x) for x in przychod]
 # X, X_t, Y, A = build_matrices(rok, przychod_l)
@@ -246,9 +176,5 @@ ax[1, 1].plot(x_zysk, funkcja_zysk(x_zysk))
 # rates()
 # prediction(1, 2018, X_t, X, Se)
 # prediction(4, 2018, X_t, X, Se)
-
-
-# make_plot(1, rok, przychod, 'Przychód', 'rok', 'przychód [$]', przychod)
 ######################################################################
 
-plt.show()
