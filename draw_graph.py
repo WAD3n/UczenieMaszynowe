@@ -2,9 +2,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def draw_graph(array1,array2,axisx_name,axisy_name,graph_name,funtion1 = None,funtion2 = None):
+def make_plot(ax, x, y, title, xlabel, ylabel, model):
+    ax.scatter(x, y)
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.plot(x, model, 'g-', linewidth=2.0)
+    ax.savefig('uzytkownicy.jpg')
+    ax.close()
 
 
+def draw_graph(array1, array2, axisx_name, axisy_name, graph_name, funtion1=None, funtion2=None):
     sorted_indices = sorted(range(len(array2)), key=lambda _: array2[_])
     sorted_array1 = [array1[i] for i in sorted_indices]
     sorted_array2 = [array2[i] for i in sorted_indices]
@@ -20,9 +28,8 @@ def draw_graph(array1,array2,axisx_name,axisy_name,graph_name,funtion1 = None,fu
     x = np.linspace(0, len(array1), 1000)
     # naniesienie funkcji na wykres
     if funtion1 != None:
-        plt.plot(x,funtion1(x))
+        plt.plot(x, funtion1(x))
     if funtion2 != None:
-        plt.plot(x,funtion2(x),color='red')
-    plt.savefig(graph_name+'.jpg')
+        plt.plot(x, funtion2(x), color='red')
+    plt.savefig(graph_name + '.jpg')
     plt.close()
-
