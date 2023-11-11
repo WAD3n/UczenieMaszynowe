@@ -4,9 +4,9 @@ import numpy as np
 
 def make_plot(x, y, title, xlabel, ylabel, model):
     plt.scatter(x, y)
-    plt.set_title(title)
-    plt.set_xlabel(xlabel)
-    plt.set_ylabel(ylabel)
+    # plt.subtitle(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.plot(x, model, 'g-', linewidth=2.0)
     plt.savefig('uzytkownicy.jpg')
     plt.close()

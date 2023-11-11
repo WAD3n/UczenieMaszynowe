@@ -4,9 +4,6 @@ from pandas import read_excel
 import modele_funkcji as mf
 import draw_graph as draw
 from users_functions import *
-from draw_graph import make_plot
-
-fig, ax = plt.subplots(1, 1, figsize=(30, 16))
 
 
 def y_model(index):
@@ -73,8 +70,9 @@ cov_matrix(Se2, X, X_t)
 rates(e, Y, quarter_index, users)
 prediction(1, 2018, X_t, X, Se)
 prediction(4, 2018, X_t, X, Se)
-make_plot(quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
-          y_model(quarter_index))
+
+draw.make_plot(quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
+               y_model(quarter_index))
 
 
 ########################################### Nieliniowe #################
