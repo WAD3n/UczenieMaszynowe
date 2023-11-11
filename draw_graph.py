@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def make_plot(ax, x, y, title, xlabel, ylabel, model):
-    ax.scatter(x, y)
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.plot(x, model, 'g-', linewidth=2.0)
-    ax.savefig('uzytkownicy.jpg')
-    ax.close()
+def make_plot(x, y, title, xlabel, ylabel, model):
+    plt.scatter(x, y)
+    plt.set_title(title)
+    plt.set_xlabel(xlabel)
+    plt.set_ylabel(ylabel)
+    plt.plot(x, model, 'g-', linewidth=2.0)
+    plt.savefig('uzytkownicy.jpg')
+    plt.close()
 
 
 def draw_graph(array1, array2, axisx_name, axisy_name, graph_name, funtion1=None, funtion2=None):

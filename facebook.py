@@ -1,59 +1,12 @@
 import matplotlib.pyplot as plt
-import numpy as np
 from pandas import read_excel
 # dodanie modulow czastkowych
 import modele_funkcji as mf
 import draw_graph as draw
+from users_functions import *
+from draw_graph import make_plot
 
 fig, ax = plt.subplots(1, 1, figsize=(30, 16))
-
-
-def load_data():
-    quarter_index = []
-    users = []
-
-    with open('dane') as f:
-        lines = f.readlines()
-
-    for l in lines:
-        splited_line = l.split()
-        quarter = int(splited_line[0][1:2])
-        year = int(splited_line[1][1:3])
-        quarter_index.append((year - 8) * 4 + quarter % 5)
-        users.append(int(splited_line[2]))
-
-    return quarter_index, users
-
-
-def make_plot(x, y, title, xlabel, ylabel, model):
-    ax.scatter(x, y)
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.plot(x, model, 'g-', linewidth=2.0)
-
-
-def build_matrices(x, y):
-    X = list(map(lambda n: [n, 1], x))
-    X = np.array(X)
-    X_t = X.transpose()
-    # print(X)
-
-    Y = list(map(lambda n: [n], y))
-    Y = np.array(Y)
-    # print(Y)
-
-    A = np.dot(X_t, X)
-    A = np.linalg.inv(A)
-    # print(A)
-    A = np.dot(A, X_t)
-    A = np.dot(A, Y)
-
-    return X, X_t, Y, A
-
-
-def quarter_to_index(quarter, year):
-    return (year - 2008) * 4 + quarter % 5
 
 
 def y_model(index):
@@ -113,7 +66,7 @@ def prediction(quarter, year, X_t, X, Se, ):
     print("  Względny błąd predykcji wynosi: ", round(Vp, 2), "%")
 
 
-quarter_index, users = load_data()
+quarter_index, users = load_data_from_txt('dane')
 X, X_t, Y, A = build_matrices(quarter_index, users)
 e, Se, Se2 = standard_deviation(X, A, quarter_index)
 cov_matrix(Se2, X, X_t)
@@ -122,8 +75,8 @@ prediction(1, 2018, X_t, X, Se)
 prediction(4, 2018, X_t, X, Se)
 make_plot(quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
           y_model(quarter_index))
-plt.savefig('uzytkownicy.jpg')
-plt.close()
+
+
 ########################################### Nieliniowe #################
 def load_data2():
     dane = read_excel(r"dane2.xlsx")
@@ -134,7 +87,6 @@ def load_data2():
 rok, przychod, zysk, pracownicy = load_data2()
 new_rok = [n - 2006 for n in rok]
 
-
 X, X_t, Y, A = build_matrices(new_rok, pracownicy)
 e, Se, Se2 = standard_deviation(X, A, new_rok)
 Sa = cov_matrix(Se2, X, X_t)
@@ -142,18 +94,21 @@ Sa = cov_matrix(Se2, X, X_t)
 print(A)
 print(Sa)
 
-
-#def badanie_istotnosci(A, Sa):
+# def badanie_istotnosci(A, Sa):
 #    for n, a in enumerate(A):
 ##        I = a / Sa[n][n]
- #       print(I)
+#       print(I)
 
 
-#badanie_istotnosci(wspolczynniki, Sa)
+# badanie_istotnosci(wspolczynniki, Sa)
 
-draw.draw_graph(new_rok, pracownicy, 'rok', 'liczba pracownikow', 'pracownicy', mf.wyznacz_funkcje_wielomianowa(new_rok, pracownicy, 3), mf.wyznacz_funkcje_wykladnicza(new_rok, pracownicy))
-draw.draw_graph(new_rok, przychod, 'rok', 'przychod', 'przychod', mf.wyznacz_funkcje_wielomianowa(new_rok, przychod, 3), mf.wyznacz_funkcje_wykladnicza(new_rok, przychod))
-draw.draw_graph(new_rok, zysk, 'rok', 'zysk', 'zysk', mf.wyznacz_funkcje_wielomianowa(new_rok, zysk, 3), mf.wyznacz_funkcje_wykladnicza(new_rok, zysk))
+draw.draw_graph(new_rok, pracownicy, 'rok', 'liczba pracownikow', 'pracownicy',
+                mf.wyznacz_funkcje_wielomianowa(new_rok, pracownicy, 3),
+                mf.wyznacz_funkcje_wykladnicza(new_rok, pracownicy))
+draw.draw_graph(new_rok, przychod, 'rok', 'przychod', 'przychod', mf.wyznacz_funkcje_wielomianowa(new_rok, przychod, 3),
+                mf.wyznacz_funkcje_wykladnicza(new_rok, przychod))
+draw.draw_graph(new_rok, zysk, 'rok', 'zysk', 'zysk', mf.wyznacz_funkcje_wielomianowa(new_rok, zysk, 3),
+                mf.wyznacz_funkcje_wykladnicza(new_rok, zysk))
 
 # przychod_l = [np.log(x) for x in przychod]
 # X, X_t, Y, A = build_matrices(rok, przychod_l)
@@ -177,4 +132,3 @@ draw.draw_graph(new_rok, zysk, 'rok', 'zysk', 'zysk', mf.wyznacz_funkcje_wielomi
 # prediction(1, 2018, X_t, X, Se)
 # prediction(4, 2018, X_t, X, Se)
 ######################################################################
-
