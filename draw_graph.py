@@ -2,13 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def make_plot(x, y, title, xlabel, ylabel, model):
+def make_plot(x, y, title, xlabel, ylabel, model, nazwa):
     plt.scatter(x, y)
-    # plt.subtitle(title)
+    plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.plot(x, model, 'g-', linewidth=2.0)
-    plt.savefig('uzytkownicy.jpg')
+    plt.savefig(nazwa)
     plt.close()
 
 

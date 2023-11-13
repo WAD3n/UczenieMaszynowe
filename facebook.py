@@ -1,132 +1,76 @@
-import matplotlib.pyplot as plt
-from pandas import read_excel
+from importlib import reload
+import numpy as np
 # dodanie modulow czastkowych
-import modele_funkcji as mf
 import draw_graph as draw
-from users_functions import *
+import modele_funkcji as mf
+import functions as func
 
+reload(func)
+reload(draw)
 
-def y_model(index):
-    return A[0] * index + A[1]
-
-
-def standard_deviation(X, A, x, k=1):
-    # Odchylenie standardowe składnika resztowego
-    e = np.array(Y - np.dot(X, A))
-    # print(e)
-    # k- liczba kolumnw macierzy X / liczba X we wzorze
-    Se2 = np.dot(e.transpose(), e) / (len(x) - (k + 1))
-    Se = np.sqrt(Se2)
-    Se = np.extract(1, Se)[0]
-    print("Odchylenie standardowe składnika resztowego:", round(Se, 2))
-    return e, Se, Se2
-
-
-def cov_matrix(Se2, X, X_t):
-    # Macierz kowariancji
-    cov_A = Se2 * (np.linalg.inv(np.dot(X_t, X)))
-    # print(cov_A)
-    print("Standardowy błąd szasunku parametru a1: ", round(np.sqrt(cov_A[0][0]), 2))
-    print("Standardowy błąd szasunku parametru a0: ", round(np.sqrt(cov_A[1][1]), 2))
-    return cov_A
-
-
-def rates(e, Y, x, y):
-    # Współczynnik zbieżności
-    wsp_zb_2 = np.dot(e.transpose(), e) / (np.dot(Y.transpose(), Y) - (len(x) * (np.average(y)) ** 2))
-    wsp_zb_2 = np.extract(1, wsp_zb_2)[0]
-    wsp_zb_2 = round(wsp_zb_2, 4)
-    print("Współczynnik zbieżności: ", wsp_zb_2)
-
-    # Współczynnik determinacji
-    print("Współczynnik determinacji: ", 1 - wsp_zb_2)
-
-    # Współczynnik zmienności losowej
-    We = Se / np.average(y) * 100
-    print("Współczynnik zmienności losowej: ", round(We, 2), "%")
-
-
-def prediction(quarter, year, X_t, X, Se, ):
-    index = quarter_to_index(quarter, year)
-    Yp = np.extract(1, y_model(index))[0]
-    print("Predykcja dla kwartału ", index, " wynosi: ", round(Yp, 2))
-    Sp = np.dot(X_t, X)
-    Sp = np.linalg.inv(Sp)
-    x_pred = np.array([index, 1])
-    Sp = np.dot(x_pred, Sp)
-    Sp = np.dot(Sp, np.transpose(x_pred))
-    Sp = np.sqrt(1 + Sp)
-    Sp = Se * Sp
-    Sp = np.extract(1, Sp)[0]
-    print("  Średni błąd predykacji wynosi: ", round(Sp, 2))
-    Vp = Sp / Yp * 100
-    print("  Względny błąd predykcji wynosi: ", round(Vp, 2), "%")
-
-
-quarter_index, users = load_data_from_txt('dane')
-X, X_t, Y, A = build_matrices(quarter_index, users)
-e, Se, Se2 = standard_deviation(X, A, quarter_index)
-cov_matrix(Se2, X, X_t)
-rates(e, Y, quarter_index, users)
-prediction(1, 2018, X_t, X, Se)
-prediction(4, 2018, X_t, X, Se)
+########################################## Model liniowy   - liczba użytkowników od kwartału
+quarter_index, users = func.load_data_from_txt('dane')
+X, X_t, Y, A = func.build_matrices(quarter_index, users, 1)
+e, Se, Se2 = func.standard_deviation(X, A, Y, quarter_index)
+func.cov_matrix(Se2, X, X_t)
+func.rates(e, Y, quarter_index, users, Se)
+x_pred = func.build_x_matrix([func.quarter_to_index(1, 2018)], 1)
+func.prediction(x_pred, A, X_t, X, Se)
 
 draw.make_plot(quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
-               y_model(quarter_index))
+               func.y_model(A, quarter_index, 1), 'uzytkownicy.jpg')
 
-
-########################################### Nieliniowe #################
-def load_data2():
-    dane = read_excel(r"dane2.xlsx")
-    return dane['Rok'].tolist(), dane['Przychód w mln $'].tolist(), dane['Zysk w mln $'].tolist(), dane[
-        'Zatrudnienie'].tolist()
-
-
-rok, przychod, zysk, pracownicy = load_data2()
-new_rok = [n - 2006 for n in rok]
-
-X, X_t, Y, A = build_matrices(new_rok, pracownicy)
-e, Se, Se2 = standard_deviation(X, A, new_rok)
-Sa = cov_matrix(Se2, X, X_t)
-
-print(A)
-print(Sa)
-
-# def badanie_istotnosci(A, Sa):
-#    for n, a in enumerate(A):
-##        I = a / Sa[n][n]
-#       print(I)
-
-
-# badanie_istotnosci(wspolczynniki, Sa)
+########################################### Wielomianowy / wykładniczy - liczba pracowników od roku
+rok, przychod, zysk, pracownicy = func.load_data_from_excel()
+new_rok = [func.year_to_index(n) for n in rok]
 
 draw.draw_graph(new_rok, pracownicy, 'rok', 'liczba pracownikow', 'pracownicy',
                 mf.wyznacz_funkcje_wielomianowa(new_rok, pracownicy, 3),
                 mf.wyznacz_funkcje_wykladnicza(new_rok, pracownicy))
+
+########################################### Wielomianowy / wykładniczy - przychód od roku
 draw.draw_graph(new_rok, przychod, 'rok', 'przychod', 'przychod', mf.wyznacz_funkcje_wielomianowa(new_rok, przychod, 3),
                 mf.wyznacz_funkcje_wykladnicza(new_rok, przychod))
+
+########################################### Wielomianowy / wykładniczy - zysk od roku
 draw.draw_graph(new_rok, zysk, 'rok', 'zysk', 'zysk', mf.wyznacz_funkcje_wielomianowa(new_rok, zysk, 3),
                 mf.wyznacz_funkcje_wykladnicza(new_rok, zysk))
 
-# przychod_l = [np.log(x) for x in przychod]
-# X, X_t, Y, A = build_matrices(rok, przychod_l)
-# e, Se, Se2 = standard_deviation(X, A, rok)
-# cov_matrix(Se2, X, X_t)
-# rates(e, Y, rok, przychod_l)
-# a1 = A[0][0]
-# a0 = A[1][0]
-# a = np.e ** a1
-# b = np.e ** a0
-# print(a)
-# print(b)
-#
-# pred = przychod_model(b, a, 11)
-# print(pred)
+########################################### Wykładniczy - przychód od roku
+# model y = b*a^x
+# linearyzacja  log_y = log_b + x * log_A
+# zał.: przychod_l = log_y , a_0 = log_b , a_1 = log_A
+# zatem: przychod_l = x * a_1 + a_0
 
-# X, X_t, Y, A = build_matrices(index, users)
-# e, Se, Se2 = standard_deviation()
-# cov_matrix()
-# rates()
-# prediction(1, 2018, X_t, X, Se)
-# prediction(4, 2018, X_t, X, Se)
-######################################################################
+print("\n")
+przychod_l = [np.log(x) for x in przychod]
+X, X_t, Y, A = func.build_matrices(new_rok, przychod_l, 1)
+e, Se, Se2 = func.standard_deviation(X, A, Y, new_rok)
+func.cov_matrix(Se2, X, X_t)
+func.rates(e, Y, new_rok, przychod_l, Se)
+a = np.e ** A[0][0]
+b = np.e ** A[1][0]
+
+print(func.przychod_model(b, a, [9]))
+
+draw.make_plot(new_rok, przychod, 'Przychod', 'rok', 'przychód',
+               func.przychod_model(b, a, new_rok), 'przychod2.jpg')
+
+########################################### Wielomianowy - zatrudnienie od roku
+print("\n")
+
+X, X_t, Y, A = func.build_matrices(new_rok, pracownicy, 3)
+e, Se, Se2 = func.standard_deviation(X, A, Y, new_rok)
+Sa = func.cov_matrix(Se2, X, X_t)
+func.rates(e, Y, new_rok, pracownicy, Se)
+func.badanie_istotnosci(A, Sa, len(X), 3)
+e, Se, Se2 = func.standard_deviation(X, A, Y, new_rok)
+Sa = func.cov_matrix(Se2, X, X_t)
+
+x_pred = func.build_x_matrix([func.year_to_index(2017)], 3)
+func.prediction(x_pred, A, X_t, X, Se)
+
+draw.make_plot(new_rok, pracownicy, 'Zatrudnienie', 'rok', 'liczba pracowników',
+               func.y_model(A, new_rok, 3), 'zatrudnienie.jpg')
+
+# można jeszcze podzielić dane na treningowe i testowe
