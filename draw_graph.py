@@ -8,7 +8,7 @@ def make_plot(x, y, title, xlabel, ylabel, model, nazwa):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.plot(x, model, 'g-', linewidth=2.0)
-    plt.savefig(nazwa)
+    plt.savefig("Wykresy/" + nazwa)
     plt.close()
 
 
@@ -31,5 +31,5 @@ def draw_graph(array1, array2, axisx_name, axisy_name, graph_name, funtion1=None
         plt.plot(x, funtion1(x))
     if funtion2 != None:
         plt.plot(x, funtion2(x), color='red')
-    plt.savefig(graph_name + '.jpg')
+    plt.savefig("Wykresy/" + graph_name + '.jpg')
     plt.close()
