@@ -9,7 +9,7 @@ reload(func)
 reload(draw)
 
 ########################################## Model liniowy   - liczba użytkowników od kwartału
-quarter_index, users = func.load_data_from_txt('dane')
+quarter_index, users = func.load_data_from_txt('dane', "kwartał")
 X, X_t, Y, A = func.build_matrices(quarter_index, users, 1)
 e, Se, Se2 = func.standard_deviation(X, A, Y, quarter_index)
 func.cov_matrix(Se2, X, X_t)
@@ -18,7 +18,7 @@ x_pred = func.build_x_matrix([func.quarter_to_index(1, 2018)], 1)
 func.prediction(x_pred, A, X_t, X, Se)
 
 draw.make_plot(quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
-               func.y_model(A, quarter_index, 1), 'uzytkownicy.jpg')
+               func.y_model(A, quarter_index, 1), 'uzytkownicy_kwartal.jpg')
 
 ########################################### Wielomianowy / wykładniczy - liczba pracowników od roku
 rok, przychod, zysk, pracownicy = func.load_data_from_excel()
@@ -60,7 +60,7 @@ draw.make_plot(new_rok, przychod, 'Przychod', 'rok', 'przychód',
 print("\n")
 
 X, X_t, Y, A = func.build_matrices(new_rok, pracownicy, 3)
-e, Se, Se2 = func.standard_deviation(X, A, Y, new_rok)
+e, Se, Se2 = func.standard_deviation(X, A, Y, new_rok, 3)
 Sa = func.cov_matrix(Se2, X, X_t)
 func.rates(e, Y, new_rok, pracownicy, Se)
 func.badanie_istotnosci(A, Sa, len(X), 3)
@@ -73,4 +73,26 @@ func.prediction(x_pred, A, X_t, X, Se)
 draw.make_plot(new_rok, pracownicy, 'Zatrudnienie', 'rok', 'liczba pracowników',
                func.y_model(A, new_rok, 3), 'zatrudnienie.jpg')
 
-# można jeszcze podzielić dane na treningowe i testowe
+########################################### Liczba użytkowników od roku
+
+year, users = func.load_data_from_txt('dane', "rok")
+X, X_t, Y, A = func.build_matrices(year, users, 1)
+e, Se, Se2 = func.standard_deviation(X, A, Y, year)
+func.cov_matrix(Se2, X, X_t)
+func.rates(e, Y, year, users, Se)
+rok_pred = func.build_x_matrix([10], 1)
+uzytk_pred = func.prediction(rok_pred, A, X_t, X, Se)
+print(uzytk_pred)
+
+draw.make_plot(year, users, 'Liczba użytkowniów facebooka', 'rok', 'liczba użytkowników',
+               func.y_model(A, year, 1), 'uzytkownicy_rok.jpg')
+
+########################################### Przychód od liczby użytkowników
+
+przychod.pop(0)
+przychod.pop(0)
+X, X_t, Y, A = func.build_matrices(users, przychod, 1)
+
+draw.draw_graph(users, przychod, 'przychód', 'użytkownicy', 'przychod_od_uzytkownikow',
+                mf.wyznacz_funkcje_wielomianowa(users, przychod, 3),
+                mf.wyznacz_funkcje_wykladnicza(users, przychod))

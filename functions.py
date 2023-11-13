@@ -3,8 +3,8 @@ from pandas import read_excel
 from scipy.stats import t
 
 
-def load_data_from_txt(name):
-    quarter_index = []
+def load_data_from_txt(name, okres):
+    period = []
     users = []
 
     with open(name) as f:
@@ -14,10 +14,15 @@ def load_data_from_txt(name):
         splited_line = l.split()
         quarter = int(splited_line[0][1:2])
         year = int(splited_line[1][1:3])
-        quarter_index.append((year - 8) * 4 + quarter % 5)
-        users.append(int(splited_line[2]))
+        if okres == "kwartał":
+            period.append((year - 8) * 4 + quarter % 5)
+            users.append(int(splited_line[2]))
+        elif okres == "rok":
+            if quarter == 4:
+                period.append(year - 8)
+                users.append(int(splited_line[2]))
 
-    return quarter_index, users
+    return period, users
 
 
 def load_data_from_excel():
@@ -126,6 +131,7 @@ def prediction(x_pred, A, X_t, X, Se):
     print("  Średni błąd predykacji wynosi: ", round(Sp, 2))
     Vp = Sp / Yp * 100
     print("  Względny błąd predykcji wynosi: ", round(Vp, 2), "%")
+    return Yp
 
 
 def badanie_istotnosci(A, Sa, n, k):
