@@ -93,6 +93,27 @@ przychod.pop(0)
 przychod.pop(0)
 X, X_t, Y, A = func.build_matrices(users, przychod, 1)
 
-draw.draw_graph(users, przychod, 'przychód', 'użytkownicy', 'przychod_od_uzytkownikow',
+draw.draw_graph(users, przychod, 'uzytkownicy', 'przychod', 'przychod_od_uzytkownikow',
+                mf.wyznacz_funkcje_wielomianowa(users, przychod, 3),
+                mf.wyznacz_funkcje_wykladnicza(users, przychod))
+
+### WYKRES NA PODSTAWIE PRZEWIDZIANEJ WARTOSCI PODSTAWIONY DO FUNKCJI WIELOMIANOWEJ
+# helper = mf.wyznacz_funkcje_wielomianowa(users, przychod, 3),
+# users.append(uzytk_pred)
+# k = helper[0]
+# przychod.append(k(uzytk_pred).__floor__())
+#
+# draw.draw_graph(users, przychod, 'uzytkownicy', 'przychod', 'przychod_od_uzytkownikow_pred_wielo',
+#                 mf.wyznacz_funkcje_wielomianowa(users, przychod, 3),
+#                 mf.wyznacz_funkcje_wykladnicza(users, przychod))
+
+
+### WYKRES NA PODSTAWIE PRZEWIDZANEJ WARTOSCI PODSTAWIONY DO FUNCKJI WYKLADNICZEJ
+helper = mf.wyznacz_funkcje_wykladnicza(users, przychod),
+users.append(uzytk_pred)
+k = helper[0]
+przychod.append(k(uzytk_pred).__floor__())
+
+draw.draw_graph(users, przychod, 'uzytkownicy', 'przychod', 'przychod_od_uzytkownikow_pred_wykl',
                 mf.wyznacz_funkcje_wielomianowa(users, przychod, 3),
                 mf.wyznacz_funkcje_wykladnicza(users, przychod))

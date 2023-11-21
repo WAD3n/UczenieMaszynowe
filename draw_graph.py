@@ -13,9 +13,9 @@ def make_plot(x, y, title, xlabel, ylabel, model, nazwa):
 
 
 def draw_graph(array1, array2, axisx_name, axisy_name, graph_name, funtion1=None, funtion2=None):
-    sorted_indices = sorted(range(len(array2)), key=lambda _: array2[_])
-    sorted_array1 = [array1[i] for i in sorted_indices]
-    sorted_array2 = [array2[i] for i in sorted_indices]
+    # sorted_indices = sorted(range(len(array2)), key=lambda _: array2[_])
+    # sorted_array1 = [array1[i] for i in sorted_indices]
+    # sorted_array2 = [array2[i] for i in sorted_indices]
     plt.title(graph_name)
     plt.xlabel(axisx_name)
     plt.ylabel(axisy_name)
@@ -25,7 +25,7 @@ def draw_graph(array1, array2, axisx_name, axisy_name, graph_name, funtion1=None
     # naniesienie puntkow na wykres
     plt.scatter(array1, array2)
     # utworzenie przestrzeni liniowej dla podstawienia do funkcji
-    x = np.linspace(0, len(array1), 1000)
+    x = np.linspace(0, array1[len(array1)-1], 1000)
     # naniesienie funkcji na wykres
     if funtion1 != None:
         plt.plot(x, funtion1(x))
