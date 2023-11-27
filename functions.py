@@ -31,7 +31,7 @@ def load_data_from_excel():
         'Zatrudnienie'].tolist()
 
 
-def build_x_matrix(x, degree):
+def build_x_matrix(x, degree, b_list=None):
     def build_x(i):
         line = []
         for d in range(degree):
@@ -39,13 +39,25 @@ def build_x_matrix(x, degree):
         line.append(1)
         return line
 
-    X = list(map(build_x, x))
+    if b_list is None:
+        X = list(map(build_x, x))
+
+    else:
+        for n in x:
+            n.append(1)
+        X = x
+
     X = np.array(X)
+
     return X
 
 
-def build_matrices(x, y, degree):
-    X = build_x_matrix(x, degree)
+def build_matrices(x, y, degree, b_list=None):
+    if b_list is None:
+        X = build_x_matrix(x, degree)
+    else:
+        X = build_x_matrix(x, degree, True)
+
     X_t = X.transpose()
 
     Y = list(map(lambda n: [n], y))
@@ -83,9 +95,8 @@ def przychod_model(b, a, x):
 
 
 def standard_deviation(X, A, Y, x, k=1):
-    # Odchylenie standardowe składnika resztowego
     e = np.array(Y - np.dot(X, A))
-    # print(e)
+    # Odchylenie standardowe składnika resztowego
     # k- liczba kolumnw macierzy X / liczba X we wzorze
     Se2 = np.dot(e.transpose(), e) / (len(x) - (k + 1))
     Se = np.sqrt(Se2)
@@ -95,11 +106,13 @@ def standard_deviation(X, A, Y, x, k=1):
 
 
 def cov_matrix(Se2, X, X_t):
+    print(Se2)
     cov_A = Se2 * (np.linalg.inv(np.dot(X_t, X)))
     # print("Standardowy błąd szasunku parametru a1: ", round(np.sqrt(cov_A[0][0]), 2))
     Sa2 = np.diag(cov_A)
-    Sa = list(map(lambda x: np.sqrt(x), Sa2))
-    return Sa
+    # print(Sa2)
+    # Sa = list(map(lambda x: np.sqrt(x), Sa2))
+    # return Sa
 
 
 def rates(e, Y, x, y, Se):
