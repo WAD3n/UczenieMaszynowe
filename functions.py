@@ -31,7 +31,7 @@ def load_data_from_excel():
         'Zatrudnienie'].tolist()
 
 
-def build_x_matrix(x, degree, b_list=None):
+def build_x_matrix(x, degree, is_x_list_of_lists=None):
     def build_x(i):
         line = []
         for d in range(degree):
@@ -39,7 +39,7 @@ def build_x_matrix(x, degree, b_list=None):
         line.append(1)
         return line
 
-    if b_list is None:
+    if is_x_list_of_lists is None:
         X = list(map(build_x, x))
 
     else:
@@ -52,8 +52,8 @@ def build_x_matrix(x, degree, b_list=None):
     return X
 
 
-def build_matrices(x, y, degree, b_list=None):
-    if b_list is None:
+def build_matrices(x, y, degree, is_x_list_of_lists=None):
+    if is_x_list_of_lists is None:
         X = build_x_matrix(x, degree)
     else:
         X = build_x_matrix(x, degree, True)
@@ -106,13 +106,12 @@ def standard_deviation(X, A, Y, x, k=1):
 
 
 def cov_matrix(Se2, X, X_t):
-    print(Se2)
     cov_A = Se2 * (np.linalg.inv(np.dot(X_t, X)))
     # print("Standardowy błąd szasunku parametru a1: ", round(np.sqrt(cov_A[0][0]), 2))
     Sa2 = np.diag(cov_A)
     # print(Sa2)
-    # Sa = list(map(lambda x: np.sqrt(x), Sa2))
-    # return Sa
+    Sa = list(map(lambda x: np.sqrt(x), Sa2))
+    return Sa
 
 
 def rates(e, Y, x, y, Se):
