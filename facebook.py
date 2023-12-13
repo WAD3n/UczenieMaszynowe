@@ -7,6 +7,7 @@ import functions as func
 
 reload(func)
 reload(draw)
+reload(mf)
 
 ########################################## Model liniowy   - liczba użytkowników od kwartału
 quarter_index, users = func.load_data_from_txt('dane', "kwartał")
@@ -15,6 +16,8 @@ e, Se, Se2 = func.standard_deviation(X, A, Y, quarter_index)
 func.cov_matrix(Se2, X, X_t)
 func.rates(e, Y, quarter_index, users, Se)
 x_pred = func.build_x_matrix([func.quarter_to_index(1, 2018)], 1)
+func.prediction(x_pred, A, X_t, X, Se)
+x_pred = func.build_x_matrix([func.quarter_to_index(2, 2020)], 1)
 func.prediction(x_pred, A, X_t, X, Se)
 
 draw.make_plot(quarter_index, users, 'Liczba użytkowniów facebooka', 'kwartał', 'liczba użytkowników',
@@ -59,6 +62,7 @@ draw.make_plot(new_rok, przychod, 'Przychod', 'rok', 'przychód',
 ########################################### Wielomianowy - zatrudnienie od roku
 print("\n")
 
+print("Wielomianowy - zatrudnienie od roku")
 X, X_t, Y, A = func.build_matrices(new_rok, pracownicy, 3)
 e, Se, Se2 = func.standard_deviation(X, A, Y, new_rok, 3)
 Sa = func.cov_matrix(Se2, X, X_t)
@@ -75,7 +79,9 @@ draw.make_plot(new_rok, pracownicy, 'Zatrudnienie', 'rok', 'liczba pracowników'
 
 ########################################### Liczba użytkowników od roku
 
+print("")
 year, users = func.load_data_from_txt('dane', "rok")
+print(year)
 X, X_t, Y, A = func.build_matrices(year, users, 1)
 e, Se, Se2 = func.standard_deviation(X, A, Y, year)
 func.cov_matrix(Se2, X, X_t)
